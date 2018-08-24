@@ -74,4 +74,5 @@ def sahel_indicators(experiment):
 
 if __name__=="__main__":
     experiments=["piControl","historical","historicalGHG","AA","rcp85"]
-    sahel_indicators(experiment)
+    for experiment in experiments:
+        sahel_indicators(experiment)
