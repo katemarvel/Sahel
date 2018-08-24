@@ -21,7 +21,7 @@ import scipy.ndimage as ndimag
 import CMIP5_tools as cmip5
 import DA_tools as da
 from Plotting import *
-from seasonal_cycle_utils import mask_data
+
 
 ### Import plotting routines
 import matplotlib.pyplot as plt
