@@ -58,11 +58,38 @@ def sahel_east(X):
     sahel_average_east=cdutil.averager(X(sahel_east),axis='xy')
     return sahel_average_east
 
+def sahel_average_piC(X):
+    if X.id=="pr":
+        X=X*60*60*24
+    sahel = cdutil.region.domain(latitude=(10,20),longitude=(-20,30))
+    sahel_average=cdutil.averager(X(sahel),axis='xy')[:200*12]
+    return sahel_average
+    
+
+def sahel_west_piC(X):
+    if X.id=="pr":
+        X=X*60*60*24
+    sahel_west = cdutil.region.domain(latitude=(10,20),longitude=(-20,0))
+    sahel_average_west=cdutil.averager(X(sahel_west),axis='xy')[:200*12]
+    return sahel_average_west
+
+def sahel_east_piC(X):
+    if X.id=="pr":
+        X=X*60*60*24
+    sahel_east = cdutil.region.domain(latitude=(10,20),longitude=(0,30))
+    sahel_average_east=cdutil.averager(X(sahel_east),axis='xy')[:200*12]
+    return sahel_average_east
 
 def sahel_indicators(experiment):
-    east = cmip5.get_ensemble(experiment,"pr",func=sahel_east)
-    west = cmip5.get_ensemble(experiment,"pr",func=sahel_west)
-    sav = cmip5.get_ensemble(experiment,"pr",func=sahel_average)
+    if experiment == "piControl":
+        east = cmip5.get_ensemble(experiment,"pr",func=sahel_east)
+        west = cmip5.get_ensemble(experiment,"pr",func=sahel_west)
+        sav = cmip5.get_ensemble(experiment,"pr",func=sahel_average)
+    else:
+        east = cmip5.get_ensemble(experiment,"pr",func=sahel_east_piC)
+        west = cmip5.get_ensemble(experiment,"pr",func=sahel_west_piC)
+        sav = cmip5.get_ensemble(experiment,"pr",func=sahel_average_piC)
+    
     east.id="pr_CE"
     west.id="pr_W"
     sav.id="pr_sahel"
