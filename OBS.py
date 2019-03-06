@@ -213,7 +213,7 @@ class Sahel():
         fac=da.get_orientation(solver)
         data = X.reshaped[direction]
         return fac*solver.projectField(data)[:,0]
-    def DA_histogram(self,experiment,direction,start=None,stop=None):
+    def DA_histogram(self,experiment,direction,start=None,stop=None,datasets=None):
         fingerprint=getattr(self,experiment)
         
         if start is None:
@@ -241,23 +241,32 @@ class Sahel():
        # plt.axvline(obs_trend,label=obs.dataset,color=da_colors(obs.dataset))
 
         #Project the observations
-        for dataset in ["gpcp","cmap","precl"]:
+        if datasets is None:
+            datasets=["gpcp","cmap","precl"]
+        if type(datasets) != type([]):
+            datasets=[datasets]
+        for dataset in datasets:
             
             obs_proj=self.obs_projections(experiment,dataset,direction)(time=(start,stop))
             obs_trend = cmip5.get_linear_trends(obs_proj)
             plt.axvline(obs_trend,label=dataset,color=da_colors(dataset))
+            print dataset + "S/N is: "+str(obs_trend/np.std(noise_trends))
 
     
-    def average_histogram(self,direction,start=None,stop=None,months="JJ"):
+    def average_histogram(self,direction,start=None,stop=None,months="JJ",datasets=None):
         if months is "JJ":
             mmean=lambda x: MV.average(x[:,5:7],axis=1)
             bigmmean=lambda X: MV.average(X[:,:,5:7],axis=2)
+        
         elif months is "SO":
             mmean=lambda x: MV.average(x[:,8:10],axis=1)
             bigmmean=lambda X: MV.average(X[:,:,8:10],axis=2)
         elif months is "JJA":
             mmean=lambda x: MV.average(x[:,5:8],axis=1)
             bigmmean=lambda X: MV.average(X[:,:,5:8],axis=2)
+        elif months is "JAS":
+            mmean=lambda x: MV.average(x[:,6:9],axis=1)
+            bigmmean=lambda X: MV.average(X[:,:,6:9],axis=2)
         elif months is "Jun":
             mmean=lambda x: x[:,5]
             bigmmean=lambda X: MV.average(X[:,:,5])
@@ -288,7 +297,11 @@ class Sahel():
         da.fit_normals_to_data(noise_trends,color=da_colors("piC"),lw=3,label="piControl")
         
         #calculate the trend in the observations
-        for dataset in ["gpcp","cmap","precl"]:
+        if datasets is None:
+            datasets=["gpcp","cmap","precl"]
+        if type(datasets) != type([]):
+            datasets=[datasets]
+        for dataset in datasets:
             X=self.OBS[string.upper(dataset)]
             obs_avg=mmean(X.reshaped[direction](time=(start,stop)))
 
